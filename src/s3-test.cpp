@@ -98,7 +98,7 @@ double TestGetObject(const Aws::String& objectKey,
            time_taken * 1e-9 << " sec. " << std::endl;
 
         // prevent gcc from optimizing out the transfer
-        std::cout << temp_buffer[BUFFER_SIZE - 1] << std::endl;
+        std::cout << temp_buffer[0] << std::endl;
 
         return time_taken;
     }
