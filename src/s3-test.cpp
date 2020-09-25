@@ -106,6 +106,7 @@ double TestGetObject(const Aws::String& objectKey,
     }
     else
     {
+        free(temp_buffer);
         auto err = get_object_outcome.GetError();
         std::cout << "Error: GetObject: " <<
             err.GetExceptionName() << ": " << err.GetMessage() << std::endl;
