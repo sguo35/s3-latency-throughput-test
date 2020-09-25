@@ -1,1 +1,1 @@
-scp -r ~/.ssh $1:~/.ssh
+scp -i $2 -r ~/.aws $1:~/.aws
