@@ -65,6 +65,12 @@ double TestGetObject(const Aws::String& objectKey,
     const size_t BUFFER_SIZE)
 {
     Aws::Client::ClientConfiguration config("rise");
+
+    if (!region.empty())
+    {
+        config.region = region;
+    }
+
     Aws::S3::S3Client s3_client(config);
     Aws::S3::Model::GetObjectRequest object_request;
     object_request.SetBucket(fromBucket);
