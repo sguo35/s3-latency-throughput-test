@@ -100,6 +100,8 @@ double TestGetObject(const Aws::String& objectKey,
         // prevent gcc from optimizing out the transfer
         std::cout << temp_buffer[0] << std::endl;
 
+        free(temp_buffer);
+
         return time_taken;
     }
     else
