@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.5)
+project(s3-test)
+find_package(AWSSDK REQUIRED COMPONENTS s3)
+set(CMAKE_CXX_STANDARD 11)
+add_executable(s3-test "s3-test.cpp")
+# list all deps for static linking
+target_link_libraries(s3-test ${AWSSDK_LINK_LIBRARIES})
+target_compile_options(s3-test PRIVATE "-Wall" "-Werror")
