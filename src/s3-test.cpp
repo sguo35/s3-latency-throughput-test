@@ -117,7 +117,7 @@ int main()
         const Aws::String region = "us-west-2";
 
         // 1 KB, 1MB, 1 GB
-        std::vector<size_t> buffer_sizes = {1024, 1024*1024};//, 1024*1024*1024};
+        std::vector<size_t> buffer_sizes = {1024, 1024*1024, 1024*1024*1024};
         for (auto iter = buffer_sizes.begin(); iter != buffer_sizes.end(); iter++) {
             std::cout << "-------" << std::endl;
 
