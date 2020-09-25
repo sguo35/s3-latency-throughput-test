@@ -10,4 +10,5 @@ make install
 cd ~
 git clone git@github.com:sguo35/s3-latency-throughput-test.git
 cd s3-latency-throughput-test/src
-bash build-cmake.sh && make && AWS_PROFILE=rise ./s3-test
+bash build-cmake.sh && make
+AWS_PROFILE=rise ./s3-test > test_results.txt

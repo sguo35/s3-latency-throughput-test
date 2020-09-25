@@ -112,22 +112,34 @@ int main()
     Aws::InitAPI(options);
 
     {
-        const Aws::String bucket_name = "latency-throughput-test";
+        const Aws::String bucket_name_unencrypted = "latency-throughput-test";
+        const Aws::String bucket_name_encrypted = "latency-throughput-test-encrypted";
         const Aws::String object_name = "test-file.txt";
         const Aws::String region = "us-west-2";
 
         // 1 KB, 1MB, 1 GB
         std::vector<size_t> buffer_sizes = {1024, 1024*1024, 1024*1024*1024};
-        for (auto iter = buffer_sizes.begin(); iter != buffer_sizes.end(); iter++) {
-            std::cout << "-------" << std::endl;
 
-            std::cout << "\n\nTesting write..." << std::endl;
-            for (size_t i = 0; i < 10; i++)
-                TestPutObject(bucket_name, object_name, region, *iter);
+        for (size_t i = 0; i < 2; i++) {
+            Aws::String bucket_name;
+            if (i == 0)
+                bucket_name = bucket_name_unencrypted;
+            else
+                bucket_name = bucket_name_encrypted;
 
-            std::cout << "\n\nTesting read..." << std::endl;
-            for (size_t i = 0; i < 10; i++)
-                TestGetObject(object_name, bucket_name, region, *iter);
+            std::cout << "Testing " << bucket_name << std::endl;
+
+            for (auto iter = buffer_sizes.begin(); iter != buffer_sizes.end(); iter++) {
+                std::cout << "-------" << std::endl;
+
+                std::cout << "\n\nTesting write..." << std::endl;
+                for (size_t i = 0; i < 10; i++)
+                    TestPutObject(bucket_name, object_name, region, *iter);
+
+                std::cout << "\n\nTesting read..." << std::endl;
+                for (size_t i = 0; i < 10; i++)
+                    TestGetObject(object_name, bucket_name, region, *iter);
+            }
         }
 
     }
