@@ -168,7 +168,6 @@ void UploadRandomFile(const Aws::String bucketName,
         // outcome must be successful, stop timer
         auto now = std::chrono::high_resolution_clock::now();
         double curr_time = std::chrono::duration_cast<std::chrono::nanoseconds>(now - start_pt).count();
-        double max_val = std::numeric_limits<double>::max();
         time_insert_finished->store(curr_time);
     }
     else 
