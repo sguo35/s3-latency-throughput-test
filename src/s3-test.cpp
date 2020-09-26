@@ -231,7 +231,6 @@ void TestConsistencyTime(const Aws::String bucket_name,
 
     // start a new thread with upload
     std::thread uploader_thread(&UploadRandomFile, bucket_name, aws_filename, region, temp_buffer, object_size, start_pt, time_insert_finished);
-    uploader_thread.detach();
     // loop every 100 us until time_object_exists is no longer max value
     // this is okay to not lock on since we just care that some thread has written
     // to it
