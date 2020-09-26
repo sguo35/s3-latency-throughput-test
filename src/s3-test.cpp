@@ -276,12 +276,14 @@ int main()
             time_object_exists.store((double) std::numeric_limits<double>::max());
             time_insert_finished.store((double) std::numeric_limits<double>::max());
             TestConsistencyTime(bucket_name_unencrypted, region, 1024, &time_object_exists, &time_insert_finished);
+
+            double exists_time = time_object_exists.load();
+            double insert_finished_time = time_insert_finished.load();
+
+            std::cout << "Consistency time was " << 1e-3 * (exists_time - insert_finished_time) << std::endl;
         }
 
-        double exists_time = time_object_exists.load();
-        double insert_finished_time = time_insert_finished.load();
 
-        std::cout << "Consistency time was " << 1e-3 * (exists_time - insert_finished_time) << std::endl;
 
         // 1 KB, 1MB, 1 GB
         std::vector<size_t> buffer_sizes = {1024, 1024*1024, 1024*1024*1024};
