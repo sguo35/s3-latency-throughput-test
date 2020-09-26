@@ -276,7 +276,7 @@ int main()
             double insert_finished_time = time_insert_finished.load();
 
             std::cout << "Consistency time was " << 1e-3 * (exists_time - insert_finished_time) <<
-                "exists time " << exists_time << " insert time " << insert_finished_time << std::endl;
+                " exists time " << exists_time << " insert time " << insert_finished_time << std::endl;
         }
 
 
