@@ -1,0 +1,164 @@
+Testing latency-throughput-test
+-------
+
+
+Testing write...
+1024B transfer took 56.7668 ms 0.0567668 sec. 
+1024B transfer took 43.893 ms 0.043893 sec. 
+1024B transfer took 110.147 ms 0.110147 sec. 
+1024B transfer took 47.4142 ms 0.0474142 sec. 
+1024B transfer took 75.0359 ms 0.0750359 sec. 
+1024B transfer took 39.6111 ms 0.0396111 sec. 
+1024B transfer took 42.7685 ms 0.0427685 sec. 
+1024B transfer took 48.1741 ms 0.0481741 sec. 
+1024B transfer took 46.6854 ms 0.0466854 sec. 
+1024B transfer took 64.934 ms 0.064934 sec. 
+
+
+Testing read...
+1024B transfer took 30.8381 ms 0.0308381 sec. 
+1024B transfer took 30.9811 ms 0.0309811 sec. 
+1024B transfer took 20.6712 ms 0.0206712 sec. 
+1024B transfer took 21.0169 ms 0.0210169 sec. 
+1024B transfer took 29.4869 ms 0.0294869 sec. 
+1024B transfer took 36.6622 ms 0.0366622 sec. 
+1024B transfer took 31.5582 ms 0.0315582 sec. 
+1024B transfer took 29.0083 ms 0.0290083 sec. 
+1024B transfer took 24.5242 ms 0.0245242 sec. 
+1024B transfer took 30.7398 ms 0.0307398 sec. 
+-------
+
+
+Testing write...
+1048576B transfer took 111.016 ms 0.111016 sec. 
+1048576B transfer took 98.9512 ms 0.0989512 sec. 
+1048576B transfer took 239.804 ms 0.239804 sec. 
+1048576B transfer took 113.66 ms 0.11366 sec. 
+1048576B transfer took 123.028 ms 0.123028 sec. 
+1048576B transfer took 89.6065 ms 0.0896065 sec. 
+1048576B transfer took 95.3013 ms 0.0953013 sec. 
+1048576B transfer took 102.958 ms 0.102958 sec. 
+1048576B transfer took 143.586 ms 0.143586 sec. 
+1048576B transfer took 98.0429 ms 0.0980429 sec. 
+
+
+Testing read...
+1048576B transfer took 33.2587 ms 0.0332587 sec. 
+1048576B transfer took 48.0562 ms 0.0480562 sec. 
+1048576B transfer took 36.6624 ms 0.0366624 sec. 
+1048576B transfer took 37.6382 ms 0.0376382 sec. 
+1048576B transfer took 31.2299 ms 0.0312299 sec. 
+1048576B transfer took 45.3462 ms 0.0453462 sec. 
+1048576B transfer took 30.9204 ms 0.0309204 sec. 
+1048576B transfer took 32.1088 ms 0.0321088 sec. 
+1048576B transfer took 40.6529 ms 0.0406529 sec. 
+1048576B transfer took 33.8249 ms 0.0338249 sec. 
+-------
+
+
+Testing write...
+1073741824B transfer took 10902.7 ms 10.9027 sec. 
+1073741824B transfer took 10721 ms 10.721 sec. 
+1073741824B transfer took 10422.4 ms 10.4224 sec. 
+1073741824B transfer took 11007.7 ms 11.0077 sec. 
+1073741824B transfer took 11659.3 ms 11.6593 sec. 
+1073741824B transfer took 10804.6 ms 10.8046 sec. 
+1073741824B transfer took 11446.1 ms 11.4461 sec. 
+1073741824B transfer took 11286.5 ms 11.2865 sec. 
+1073741824B transfer took 59314.5 ms 59.3145 sec. 
+1073741824B transfer took 12843.6 ms 12.8436 sec. 
+
+
+Testing read...
+1073741824B transfer took 11594.7 ms 11.5947 sec. 
+1073741824B transfer took 11566.3 ms 11.5663 sec. 
+1073741824B transfer took 11563.6 ms 11.5636 sec. 
+1073741824B transfer took 11598.4 ms 11.5984 sec. 
+1073741824B transfer took 11563.5 ms 11.5635 sec. 
+1073741824B transfer took 11568.4 ms 11.5684 sec. 
+1073741824B transfer took 15343.2 ms 15.3432 sec. 
+1073741824B transfer took 11565.6 ms 11.5656 sec. 
+1073741824B transfer took 11820.7 ms 11.8207 sec. 
+1073741824B transfer took 17298.9 ms 17.2989 sec. 
+Testing latency-throughput-test-encrypted
+-------
+
+
+Testing write...
+1024B transfer took 59.7246 ms 0.0597246 sec. 
+1024B transfer took 40.5706 ms 0.0405706 sec. 
+1024B transfer took 86.7404 ms 0.0867404 sec. 
+1024B transfer took 60.0323 ms 0.0600323 sec. 
+1024B transfer took 38.3983 ms 0.0383983 sec. 
+1024B transfer took 64.8007 ms 0.0648007 sec. 
+1024B transfer took 40.4599 ms 0.0404599 sec. 
+1024B transfer took 27.4014 ms 0.0274014 sec. 
+1024B transfer took 30.8223 ms 0.0308223 sec. 
+1024B transfer took 26.1861 ms 0.0261861 sec. 
+
+
+Testing read...
+1024B transfer took 18.7833 ms 0.0187833 sec. 
+1024B transfer took 33.8961 ms 0.0338961 sec. 
+1024B transfer took 17.4808 ms 0.0174808 sec. 
+1024B transfer took 32.7517 ms 0.0327517 sec. 
+1024B transfer took 33.258 ms 0.033258 sec. 
+1024B transfer took 51.4293 ms 0.0514293 sec. 
+1024B transfer took 31.8959 ms 0.0318959 sec. 
+1024B transfer took 33.4436 ms 0.0334436 sec. 
+1024B transfer took 40.1944 ms 0.0401944 sec. 
+1024B transfer took 18.9145 ms 0.0189145 sec. 
+-------
+
+
+Testing write...
+1048576B transfer took 150.867 ms 0.150867 sec. 
+1048576B transfer took 140.419 ms 0.140419 sec. 
+1048576B transfer took 86.2627 ms 0.0862627 sec. 
+1048576B transfer took 136.887 ms 0.136887 sec. 
+1048576B transfer took 106.57 ms 0.10657 sec. 
+1048576B transfer took 125.355 ms 0.125355 sec. 
+1048576B transfer took 129.214 ms 0.129214 sec. 
+1048576B transfer took 125.539 ms 0.125539 sec. 
+1048576B transfer took 122.098 ms 0.122098 sec. 
+1048576B transfer took 122.779 ms 0.122779 sec. 
+
+
+Testing read...
+1048576B transfer took 32.3559 ms 0.0323559 sec. 
+1048576B transfer took 31.1959 ms 0.0311959 sec. 
+1048576B transfer took 28.616 ms 0.028616 sec. 
+1048576B transfer took 53.2759 ms 0.0532759 sec. 
+1048576B transfer took 52.9173 ms 0.0529173 sec. 
+1048576B transfer took 35.4956 ms 0.0354956 sec. 
+1048576B transfer took 32.9281 ms 0.0329281 sec. 
+1048576B transfer took 32.9989 ms 0.0329989 sec. 
+1048576B transfer took 46.0085 ms 0.0460085 sec. 
+1048576B transfer took 32.9478 ms 0.0329478 sec. 
+-------
+
+
+Testing write...
+1073741824B transfer took 11803.2 ms 11.8032 sec. 
+1073741824B transfer took 11292.6 ms 11.2926 sec. 
+1073741824B transfer took 11450 ms 11.45 sec. 
+1073741824B transfer took 10730.7 ms 10.7307 sec. 
+1073741824B transfer took 11205 ms 11.205 sec. 
+1073741824B transfer took 10991.4 ms 10.9914 sec. 
+1073741824B transfer took 11013.8 ms 11.0138 sec. 
+1073741824B transfer took 11146.8 ms 11.1468 sec. 
+1073741824B transfer took 11315.8 ms 11.3158 sec. 
+1073741824B transfer took 11639.5 ms 11.6395 sec. 
+
+
+Testing read...
+1073741824B transfer took 11569.8 ms 11.5698 sec. 
+1073741824B transfer took 11560.6 ms 11.5606 sec. 
+1073741824B transfer took 11561.6 ms 11.5616 sec. 
+1073741824B transfer took 11565.4 ms 11.5654 sec. 
+1073741824B transfer took 11566.9 ms 11.5669 sec. 
+1073741824B transfer took 11558.3 ms 11.5583 sec. 
+1073741824B transfer took 11561.8 ms 11.5618 sec. 
+1073741824B transfer took 12644.4 ms 12.6444 sec. 
+1073741824B transfer took 11552.9 ms 11.5529 sec. 
+1073741824B transfer took 24111 ms 24.111 sec. 

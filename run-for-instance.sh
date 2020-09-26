@@ -1,4 +1,5 @@
 #!/bin/bash
+# args: ec2-user@[instance] [ssh_key_location] [instance_name]
 
 # copy AWS credentials to EC2 instance
 scp -i $2 -r ~/.aws $1:~/.aws
