@@ -237,6 +237,7 @@ void TestConsistencyTime(const Aws::String bucket_name,
 
     // start a new thread with upload
     std::thread uploader_thread(&UploadRandomFile, bucket_name, aws_filename, region, temp_buffer, object_size, start_pt, time_insert_finished);
+    uploader_thread.detach();
     // loop every 500us until time_object_exists is no longer max value
     // this is okay to not lock on since we just care that some thread has written
     // to it
@@ -244,6 +245,7 @@ void TestConsistencyTime(const Aws::String bucket_name,
     double max_val = std::numeric_limits<double>::max();
     while (exists_time == max_val) {
         std::thread checker_thread(&CheckFileExists, aws_filename, bucket_name, region, start_pt, time_object_exists);
+        checker_thread.detach();
         exists_time = time_object_exists->load();
         std::this_thread::sleep_for(std::chrono::microseconds(500));
     }
