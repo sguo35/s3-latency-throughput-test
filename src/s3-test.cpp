@@ -169,12 +169,7 @@ void UploadRandomFile(const Aws::String bucketName,
         auto now = std::chrono::high_resolution_clock::now();
         double curr_time = std::chrono::duration_cast<std::chrono::nanoseconds>(now - start_pt).count();
         double max_val = std::numeric_limits<double>::max();
-        time_insert_finished->compare_exchange_strong(
-            max_val,
-            curr_time,
-            std::memory_order_seq_cst,
-            std::memory_order_seq_cst
-        );
+        time_insert_finished->store(curr_time);
     }
     else 
     {
@@ -249,6 +244,8 @@ void TestConsistencyTime(const Aws::String bucket_name,
         exists_time = time_object_exists->load();
         std::this_thread::sleep_for(std::chrono::microseconds(100));
     }
+
+    uploader_thread.join();
 
     free(temp_buffer);
 }
