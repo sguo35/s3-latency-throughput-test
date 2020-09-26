@@ -267,15 +267,16 @@ int main()
         const Aws::String region = "us-west-2";
 
         std::atomic<double> time_object_exists;
-        time_object_exists.store((double) std::numeric_limits<double>::max());
         std::atomic<double> time_insert_finished;
-        time_insert_finished.store((double) std::numeric_limits<double>::max());
 
         // test time for 2 requesters to see consistent views of a newly uploaded object
         // we do this by uploading a 1KB object and spinning up threads every 1ms
         // to check if the object exists, and if it does, we atomically set the time value
-        for (size_t i = 0; i < 10; i++)
+        for (size_t i = 0; i < 10; i++) {
+            time_object_exists.store((double) std::numeric_limits<double>::max());
+            time_insert_finished.store((double) std::numeric_limits<double>::max());
             TestConsistencyTime(bucket_name_unencrypted, region, 1024, &time_object_exists, &time_insert_finished);
+        }
 
         double exists_time = time_object_exists.load();
         double insert_finished_time = time_insert_finished.load();
