@@ -1,0 +1,10 @@
+Consistency time was 19227.9 exists time 2.62994e+08 insert time 2.43766e+08
+Consistency time was -71002.2 exists time 2.65028e+08 insert time 3.3603e+08
+Consistency time was 533759 exists time 6.06702e+08 insert time 7.2943e+07
+Consistency time was 643274 exists time 6.80453e+08 insert time 3.7179e+07
+Consistency time was 687761 exists time 7.21234e+08 insert time 3.34731e+07
+Consistency time was 15281.9 exists time 5.62644e+07 insert time 4.09825e+07
+Consistency time was -62148.2 exists time 5.28023e+07 insert time 1.14951e+08
+Consistency time was 8753.27 exists time 4.70688e+07 insert time 3.83156e+07
+Consistency time was -40749.3 exists time 4.91553e+07 insert time 8.99046e+07
+Consistency time was 60513.3 exists time 9.55284e+07 insert time 3.50152e+07
