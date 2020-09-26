@@ -4,6 +4,7 @@
 #include <vector>
 #include <chrono>
 #include <thread>
+#include <time.h>
 #include <aws/core/Aws.h>
 #include <aws/s3/S3Client.h>
 #include <aws/s3/model/GetObjectRequest.h>
@@ -256,6 +257,8 @@ int main()
     Aws::InitAPI(options);
 
     {
+        srand (time(NULL));
+
         const Aws::String bucket_name_unencrypted = "latency-throughput-test";
         const Aws::String bucket_name_encrypted = "latency-throughput-test-encrypted";
         const Aws::String object_name = "test-file.txt";
