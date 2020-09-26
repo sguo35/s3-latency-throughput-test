@@ -238,7 +238,7 @@ void TestConsistencyTime(const Aws::String bucket_name,
     // start a new thread with upload
     std::thread uploader_thread(&UploadRandomFile, bucket_name, aws_filename, region, temp_buffer, object_size, start_pt, time_insert_finished);
     uploader_thread.detach();
-    // loop every 500us until time_object_exists is no longer max value
+    // loop every 100 us until time_object_exists is no longer max value
     // this is okay to not lock on since we just care that some thread has written
     // to it
     double exists_time = time_object_exists->load();
@@ -247,7 +247,7 @@ void TestConsistencyTime(const Aws::String bucket_name,
         std::thread checker_thread(&CheckFileExists, aws_filename, bucket_name, region, start_pt, time_object_exists);
         checker_thread.detach();
         exists_time = time_object_exists->load();
-        std::this_thread::sleep_for(std::chrono::microseconds(500));
+        std::this_thread::sleep_for(std::chrono::microseconds(100));
     }
 
     free(temp_buffer);
@@ -280,7 +280,8 @@ int main()
             double exists_time = time_object_exists.load();
             double insert_finished_time = time_insert_finished.load();
 
-            std::cout << "Consistency time was " << 1e-3 * (exists_time - insert_finished_time) << std::endl;
+            std::cout << "Consistency time was " << 1e-3 * (exists_time - insert_finished_time) <<
+                "exists time " << exists_time << " insert time " << insert_finished_time << std::endl;
         }
 
 
