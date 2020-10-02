@@ -9,3 +9,5 @@ s3-test
 test_results.txt
 
 async_client
+*.dylib
+node_modules
