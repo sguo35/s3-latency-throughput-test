@@ -35,7 +35,7 @@ var s3 = new AWS.S3({
 
 async function testWrite(s3Params, startTime, workers, size) {
     let promises = []
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < workers; i++) {
         promises.push(s3.putObject(s3Params).promise());
     }
 
