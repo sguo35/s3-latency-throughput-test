@@ -7,3 +7,5 @@ s3-test
 
 .vscode
 test_results.txt
+
+async_client

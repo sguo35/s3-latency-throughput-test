@@ -12,9 +12,9 @@ ssh -i $2 $1 << EOF
     cd ~ && git clone https://github.com/aws/aws-sdk-cpp.git;
     cd ~/aws-sdk-cpp && cmake3 . -DCMAKE_BUILD_TYPE=Release -DBUILD_ONLY=s3 && make && sudo make install;
     cd ~ && git clone https://github.com/sguo35/s3-latency-throughput-test.git;
-    cd ~/s3-latency-throughput-test/src && bash build-cmake.sh && make;
+    cd ~/s3-latency-throughput-test/aws-sdk && bash build-cmake.sh && make;
     AWS_PROFILE=rise ./s3-test > test_results.txt;
 EOF
 
 # copy results back
-scp -i $2 $1:~/s3-latency-throughput-test/src/test_results.txt ~/s3-latency-throughput-test/src/test_results-$3.txt
+scp -i $2 $1:~/s3-latency-throughput-test/aws-sdk/test_results.txt ~/s3-latency-throughput-test/aws-sdk/test_results-$3.txt

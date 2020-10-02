@@ -1,0 +1,4 @@
+GET /test-file.txt HTTP/1.0\r
+Host: latency-throughput-test.s3.amazonaws.com\r
+Accept: */*\r
+Connection: close\r\n\r\n
