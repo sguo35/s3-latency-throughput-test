@@ -1,3 +1,4 @@
+try {
 var nc = require('nodeaffinity');
 
 //Returns the cpus/cores (affinity mask) on which current node process is allowed to run
@@ -7,6 +8,7 @@ console.log(nc.getAffinity());
 //Sets process CPU affinity, here 3 means 011 i.e. process will be allowed to run on cpu0 and cpu1
 // returns same mask id success , if failure retuen -1.
 console.log(nc.setAffinity(4));
+} catch(e) {console.log(e)}
 
 var AWS = require("aws-sdk");
 var performance = require('perf_hooks').performance
@@ -44,7 +46,7 @@ async function testWrite(s3Params, startTime, workers, size) {
 
 async function testRead(s3Params, startTime, workers, size) {
     let promises = []
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < workers; i++) {
         promises.push(s3.getObject(s3Params).promise());
     }
 
