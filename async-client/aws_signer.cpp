@@ -75,10 +75,133 @@ void hex2stream(const std::string hexstr, std::string& str)
     }
 }
 
+const unsigned SHA256_DIGEST_LENGTH = 64;
+
+// https://gist.github.com/tsupo/112188/3fe993ca2f05cba75b139bef6472b4503fb27a2d
+void
+hmac_sha256(
+    const unsigned char *key,       /* pointer to authentication key */
+    int                 key_len,    /* length of authentication key  */
+    const unsigned char *text,      /* pointer to data stream        */
+    int                 text_len,   /* length of data stream         */
+    void                *digest)    /* caller digest to be filled in */
+{
+    unsigned char k_ipad[65];   /* inner padding -
+                                 * key XORd with ipad
+                                 */
+    unsigned char k_opad[65];   /* outer padding -
+                                 * key XORd with opad
+                                 */
+    unsigned char tk[SHA256_DIGEST_LENGTH];
+    unsigned char tk2[SHA256_DIGEST_LENGTH];
+    unsigned char bufferIn[1024];
+    unsigned char bufferOut[1024];
+    int           i;
+
+    /* if key is longer than 64 bytes reset it to key=sha256(key) */
+    if ( key_len > 64 ) {
+        SHA256( key, key_len, tk );
+        key     = tk;
+        key_len = SHA256_DIGEST_LENGTH;
+    }
+
+    /*
+     * the HMAC_SHA256 transform looks like:
+     *
+     * SHA256(K XOR opad, SHA256(K XOR ipad, text))
+     *
+     * where K is an n byte key
+     * ipad is the byte 0x36 repeated 64 times
+     * opad is the byte 0x5c repeated 64 times
+     * and text is the data being protected
+     */
+
+    /* start out by storing key in pads */
+    memset( k_ipad, 0, sizeof k_ipad );
+    memset( k_opad, 0, sizeof k_opad );
+    memcpy( k_ipad, key, key_len );
+    memcpy( k_opad, key, key_len );
+
+    /* XOR key with ipad and opad values */
+    for ( i = 0; i < 64; i++ ) {
+        k_ipad[i] ^= 0x36;
+        k_opad[i] ^= 0x5c;
+    }
+
+    /*
+     * perform inner SHA256
+     */
+    memset( bufferIn, 0x00, 1024 );
+    memcpy( bufferIn, k_ipad, 64 );
+    memcpy( bufferIn + 64, text, text_len );
+
+    SHA256( bufferIn, 64 + text_len, tk2 );
+
+    /*
+     * perform outer SHA256
+     */
+    memset( bufferOut, 0x00, 1024 );
+    memcpy( bufferOut, k_opad, 64 );
+    memcpy( bufferOut + 64, tk2, SHA256_DIGEST_LENGTH );
+
+    SHA256( bufferOut, 64 + SHA256_DIGEST_LENGTH, digest );
+}
+
 const std::string NEWLINE("\n");
 const std::string SLASH_DELIM("/");
 const std::string AWS_HMAC_STR_PREFIX("AWS4-HMAC-SHA256");
 const std::string AWS_STR_TO_SIGN_SUFFIX("/aws4_request");
+const std::string AWS_STR_SECRET_SIGNING_PREFIX("AWS4");
+const std::string AWS_SIGNING_KEY_SUFFIX("aws4_request");
+
+std::string calculate_signature(std::string secret_key, boost::posix_time::ptime time, 
+                                std::string region, std::string service, std::string string_to_sign) {
+    std::string date_key;
+    std::string date_region_key;
+    std::string date_region_service_key;
+    std::string signing_key;
+
+    std::string date_key_hmac_key = AWS_STR_SECRET_SIGNING_PREFIX + secret_key;
+    std::string date_key_hmac_data = boost::posix_time::to_iso_string(time).substr(0, 8);
+
+    // calculate DateKey
+    const char* date_key_key = date_key_hmac_key.c_str();
+    const char* date_key_text = date_key_hmac_data.c_str();
+    char date_key_digest[HMAC_DIGEST_SIZE];
+
+    hmac_sha256(date_key_key, date_key_hmac_key.length(), date_key_text, date_key_hmac_data.length(), date_key_digest);
+    date_key(date_key_digest, HMAC_DIGEST_SIZE);
+
+    // calculate DateRegionKey
+    const char* date_region_key_text = region.c_str();
+    char date_region_key_digest[HMAC_DIGEST_SIZE];
+
+    hmac_sha256(date_key_digest, HMAC_DIGEST_SIZE, date_region_key_text, region.length(), date_region_key_digest);
+
+    // calculate DateRegionServiceKey
+    const char* date_region_service_key_text = service.c_str();
+    char date_region_service_key_digest[HMAC_DIGEST_SIZE];
+
+    hmac_sha256(date_region_key_digest, HMAC_DIGEST_SIZE, date_region_service_key_text, service.length(), date_region_service_key_digest);
+
+    // calculate SigningKey
+    const char* signing_key_text = AWS_SIGNING_KEY_SUFFIX.c_str();
+    char signing_key_digest[HMAC_DIGEST_SIZE];
+
+    hmac_sha256(date_region_service_key_digest, HMAC_DIGEST_SIZE, signing_key_text, AWS_SIGNING_KEY_SUFFIX.length(), signing_key_digest);
+
+    // final signature
+    const char* string_to_sign_text = string_to_sign.c_str();
+    char signature_digest[HMAC_DIGEST_SIZE];
+
+    hmac_sha256(signing_key_digest, HMAC_DIGEST_SIZE, string_to_sign_text, string_to_sign.length(), signature_digest);
+    const std::string final_signature(signature_digest, HMAC_DIGEST_SIZE);
+    std::string final_signature_hex;
+
+    stream2hex(final_signature, final_signature_hex);
+
+    return final_signature_hex;
+}
 
 std::string get_string_to_sign(boost::posix_time::ptime time, std::string region,
                             std::string service, std::string canonical_request) {
@@ -111,8 +234,13 @@ int main(int, char**)
     std::string canonical_request("test canonical request");
 
     std::string string_to_sign = get_string_to_sign(t, region, service, canonical_request);
-    std::cout << string_to_sign << std::endl;
+    std::cout << string_to_sign << "\n" << std::endl;
 
+    std::string secret_key("test secret");
+
+    std::string signature = calculate_signature(secret_key, t, 
+                                region, service, string_to_sign);
+    std::cout << signature << std::endl;
     return 0;
 }
 
@@ -143,76 +271,6 @@ int main(int, char**)
 //     return ret_s;
 // }
 
-
-// // https://gist.github.com/tsupo/112188/3fe993ca2f05cba75b139bef6472b4503fb27a2d
-// void
-// hmac_sha256(
-//     const unsigned char *text,      /* pointer to data stream        */
-//     int                 text_len,   /* length of data stream         */
-//     const unsigned char *key,       /* pointer to authentication key */
-//     int                 key_len,    /* length of authentication key  */
-//     void                *digest)    /* caller digest to be filled in */
-// {
-//     unsigned char k_ipad[65];   /* inner padding -
-//                                  * key XORd with ipad
-//                                  */
-//     unsigned char k_opad[65];   /* outer padding -
-//                                  * key XORd with opad
-//                                  */
-//     unsigned char tk[SHA256_DIGEST_LENGTH];
-//     unsigned char tk2[SHA256_DIGEST_LENGTH];
-//     unsigned char bufferIn[1024];
-//     unsigned char bufferOut[1024];
-//     int           i;
-
-//     /* if key is longer than 64 bytes reset it to key=sha256(key) */
-//     if ( key_len > 64 ) {
-//         SHA256( key, key_len, tk );
-//         key     = tk;
-//         key_len = SHA256_DIGEST_LENGTH;
-//     }
-
-//     /*
-//      * the HMAC_SHA256 transform looks like:
-//      *
-//      * SHA256(K XOR opad, SHA256(K XOR ipad, text))
-//      *
-//      * where K is an n byte key
-//      * ipad is the byte 0x36 repeated 64 times
-//      * opad is the byte 0x5c repeated 64 times
-//      * and text is the data being protected
-//      */
-
-//     /* start out by storing key in pads */
-//     memset( k_ipad, 0, sizeof k_ipad );
-//     memset( k_opad, 0, sizeof k_opad );
-//     memcpy( k_ipad, key, key_len );
-//     memcpy( k_opad, key, key_len );
-
-//     /* XOR key with ipad and opad values */
-//     for ( i = 0; i < 64; i++ ) {
-//         k_ipad[i] ^= 0x36;
-//         k_opad[i] ^= 0x5c;
-//     }
-
-//     /*
-//      * perform inner SHA256
-//      */
-//     memset( bufferIn, 0x00, 1024 );
-//     memcpy( bufferIn, k_ipad, 64 );
-//     memcpy( bufferIn + 64, text, text_len );
-
-//     SHA256( bufferIn, 64 + text_len, tk2 );
-
-//     /*
-//      * perform outer SHA256
-//      */
-//     memset( bufferOut, 0x00, 1024 );
-//     memcpy( bufferOut, k_opad, 64 );
-//     memcpy( bufferOut + 64, tk2, SHA256_DIGEST_LENGTH );
-
-//     SHA256( bufferOut, 64 + SHA256_DIGEST_LENGTH, digest );
-// }
 
 #ifdef  TEST
 #ifdef  _MSC_VER
