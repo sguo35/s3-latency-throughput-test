@@ -152,6 +152,7 @@ const std::string AWS_HMAC_STR_PREFIX("AWS4-HMAC-SHA256");
 const std::string AWS_STR_TO_SIGN_SUFFIX("/aws4_request");
 const std::string AWS_STR_SECRET_SIGNING_PREFIX("AWS4");
 const std::string AWS_SIGNING_KEY_SUFFIX("aws4_request");
+const std::string ISO8601_ANY_TIME_ZONE_SUFFIX("Z");
 
 std::string calculate_signature(std::string secret_key, boost::posix_time::ptime time, 
                                 std::string region, std::string service, std::string string_to_sign) {
@@ -208,7 +209,7 @@ std::string get_string_to_sign(boost::posix_time::ptime time, std::string region
     std::string hexed_hashed_canon_req;
     stream2hex(hashed_canonical_request, hexed_hashed_canon_req);
 
-    std::string str_to_sign = AWS_HMAC_STR_PREFIX + NEWLINE + boost::posix_time::to_iso_string(time)
+    std::string str_to_sign = AWS_HMAC_STR_PREFIX + NEWLINE + (boost::posix_time::to_iso_string(time) + ISO8601_ANY_TIME_ZONE_SUFFIX)
                             + NEWLINE + scope + NEWLINE + hexed_hashed_canon_req;
 
     return str_to_sign;
