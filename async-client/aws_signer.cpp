@@ -52,16 +52,16 @@ bool computeSHA256Hash(const std::string& unhashed, std::string& hashed)
 
 int main(int, char**)
 {
-    std::string pw1 = "", pw1hashed;
+    std::string pw1(""), pw1hashed;
 
     computeSHA256Hash(pw1, pw1hashed);
 
     std::cout << pw1hashed << std::endl;
 
     boost::posix_time::ptime t = boost::posix_time::microsec_clock::universal_time();
-    std::string region = "us-west-2";
-    std::string service = "s3";
-    std::string canonical_request = "test canonical request";
+    std::string region("us-west-2");
+    std::string service("s3");
+    std::string canonical_request("test canonical request");
 
     std::string string_to_sign = get_string_to_sign(t, region, service, canonical_request);
     std::cout << string_to_sign << std::endl;
@@ -69,9 +69,15 @@ int main(int, char**)
     return 0;
 }
 
+const std::string NEWLINE("\n");
+const std::string SLASH_DELIM("/");
+const std::string AWS_HMAC_STR_PREFIX("AWS4-HMAC-SHA256");
+const std::string AWS_STR_TO_SIGN_SUFFIX("/aws4_request");
+
 std::string get_string_to_sign(boost::posix_time::ptime time, std::string region,
                             std::string service, std::string canonical_request) {
-    std::string scope = boost::posix_time::to_iso_string(time).substr(0, 8) + "/" + region + "/" + service + "/aws4_request";
+    std::string scope = boost::posix_time::to_iso_string(time).substr(0, 8) + SLASH_DELIM + 
+                        region + SLASH_DELIM + service + AWS_STR_TO_SIGN_SUFFIX;
 
     std::string hashed_canonical_request;
     computeSHA256Hash(&canonical_request, &hashed_canonical_request);
@@ -79,8 +85,8 @@ std::string get_string_to_sign(boost::posix_time::ptime time, std::string region
     std::string hexed_hashed_canon_req;
     boost::algorithm::hex(hashed_canonical_request, std::back_inserter(hexed_hashed_canon_req));
 
-    std::string str_to_sign = "AWS4-HMAC-SHA256" + "\n" + boost::posix_time::to_iso_string(time)
-                            + "\n" + scope + "\n" + hexed_hashed_canon_req;
+    std::string str_to_sign = AWS_HMAC_STR_PREFIX + NEWLINE + boost::posix_time::to_iso_string(time)
+                            + NEWLINE + scope + NEWLINE + hexed_hashed_canon_req;
 
     return str_to_sign;
 }
