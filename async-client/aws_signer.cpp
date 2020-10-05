@@ -232,7 +232,11 @@ std::string get_canonical_request(boost::posix_time::ptime time, std::string hos
     // compute the sha256 hash of the content
     std::string content_str(content, content_length);
     std::string content_hash;
-    computeSHA256Hash(content_str, content_hash);
+
+    if (content_length > 0)
+        computeSHA256Hash(content_str, content_hash);
+    else
+        content_hash = std::string("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
 
     // not using any query string params
     canon_req += NEWLINE;
@@ -278,9 +282,10 @@ e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855)";
 
     std::cout << "Original canonical req\n" << canonical_request << "\n" << std::endl;
 
+    char* body = "";
     std::string generated_c_request = get_canonical_request(t, "examplebucket.s3.amazonaws.com",
                                 "test.txt",
-                                "GET", "", 0);
+                                "GET", body, 0);
     std::cout << "Generated canonical req\n" << generated_c_request << "\n" << std::endl;
 
     std::string string_to_sign = get_string_to_sign(t, region, service, canonical_request);
