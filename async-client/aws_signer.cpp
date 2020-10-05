@@ -206,11 +206,8 @@ std::string get_string_to_sign(boost::posix_time::ptime time, std::string region
     std::string hashed_canonical_request;
     computeSHA256Hash(canonical_request, hashed_canonical_request);
 
-    std::string hexed_hashed_canon_req;
-    stream2hex(hashed_canonical_request, hexed_hashed_canon_req);
-
     std::string str_to_sign = AWS_HMAC_STR_PREFIX + NEWLINE + (boost::posix_time::to_iso_string(time) + ISO8601_ANY_TIME_ZONE_SUFFIX)
-                            + NEWLINE + scope + NEWLINE + hexed_hashed_canon_req;
+                            + NEWLINE + scope + NEWLINE + hashed_canonical_request;
 
     return str_to_sign;
 }
