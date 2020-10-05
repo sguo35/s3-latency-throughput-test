@@ -49,7 +49,6 @@ class session : public std::enable_shared_from_this<session>
     http::response<http::string_body> res_;
 
 public:
-    explicit
     session(
         net::any_io_executor ex,
         ssl::context& ctx)
