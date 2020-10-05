@@ -212,6 +212,44 @@ std::string get_string_to_sign(boost::posix_time::ptime time, std::string region
     return str_to_sign;
 }
 
+const std::string HOST_HEADER("host");
+const std::string CONTENT_SHA256_HEADER("x-amz-content-sha256");
+const std::string DATE_HEADER("x-amz-date");
+const std::string COLON_DELIM(":");
+const std::string SEMICOLON_DELIM(";");
+
+std::string get_canonical_request(boost::posix_time::ptime time, std::string host,
+                                std::string path,
+                                std::string http_verb, char* content, size_t content_length) {
+    std::string canonical_query_str("");
+
+    std::string canon_req("");
+    canon_req += http_verb + NEWLINE;
+
+    std::string canonical_uri = SLASH_DELIM + path;
+    canon_req += canonical_uri + NEWLINE;
+
+    // compute the sha256 hash of the content
+    std::string content_str(content, content_length);
+    std::string content_hash;
+    computeSHA256Hash(content_str, content_hash);
+
+    // not using any query string params
+    canon_req += NEWLINE;
+
+    std::string canonical_headers = HOST_HEADER + COLON_DELIM + host + NEWLINE;
+    canonical_headers += CONTENT_SHA256_HEADER + COLON_DELIM + content_hash + NEWLINE;
+    canonical_headers += DATE_HEADER + COLON_DELIM + (boost::posix_time::to_iso_string(time) + ISO8601_ANY_TIME_ZONE_SUFFIX) + NEWLINE;
+
+    canon_req += canonical_headers;
+
+    std::string signed_headers = HOST_HEADER + SEMICOLON_DELIM + CONTENT_SHA256_HEADER + SEMICOLON_DELIM + DATE_HEADER;
+    canon_req += signed_headers + NEWLINE;
+
+    // HashedPayload
+    canon_req += content_hash;
+}
+
 int main(int, char**)
 {
     std::string pw1(""), pw1hashed;
@@ -237,6 +275,13 @@ x-amz-date:20130524T000000Z
 host;range;x-amz-content-sha256;x-amz-date
 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855)";
     std::string canonical_request(c_req);
+
+    std::cout << "Original canonical req\n" << canonical_request << "\n" << std::endl;
+
+    std::string generated_c_request = get_canonical_request(t, "examplebucket.s3.amazonaws.com",
+                                "test.txt",
+                                "GET", "", 0);
+    std::cout << "Generated canonical req\n" << generated_c_request << "\n" << std::endl;
 
     std::string string_to_sign = get_string_to_sign(t, region, service, canonical_request);
     std::cout << string_to_sign << "\n" << std::endl;
