@@ -50,25 +50,6 @@ bool computeSHA256Hash(const std::string& unhashed, std::string& hashed)
     return success;
 }
 
-int main(int, char**)
-{
-    std::string pw1(""), pw1hashed;
-
-    computeSHA256Hash(pw1, pw1hashed);
-
-    std::cout << pw1hashed << std::endl;
-
-    boost::posix_time::ptime t = boost::posix_time::microsec_clock::universal_time();
-    std::string region("us-west-2");
-    std::string service("s3");
-    std::string canonical_request("test canonical request");
-
-    std::string string_to_sign = get_string_to_sign(t, region, service, canonical_request);
-    std::cout << string_to_sign << std::endl;
-
-    return 0;
-}
-
 const std::string NEWLINE("\n");
 const std::string SLASH_DELIM("/");
 const std::string AWS_HMAC_STR_PREFIX("AWS4-HMAC-SHA256");
@@ -89,6 +70,25 @@ std::string get_string_to_sign(boost::posix_time::ptime time, std::string region
                             + NEWLINE + scope + NEWLINE + hexed_hashed_canon_req;
 
     return str_to_sign;
+}
+
+int main(int, char**)
+{
+    std::string pw1(""), pw1hashed;
+
+    computeSHA256Hash(pw1, pw1hashed);
+
+    std::cout << pw1hashed << std::endl;
+
+    boost::posix_time::ptime t = boost::posix_time::microsec_clock::universal_time();
+    std::string region("us-west-2");
+    std::string service("s3");
+    std::string canonical_request("test canonical request");
+
+    std::string string_to_sign = get_string_to_sign(t, region, service, canonical_request);
+    std::cout << string_to_sign << std::endl;
+
+    return 0;
 }
 
 // std::string get_signature_key(std::string secret_key, std::string key, std::string bucket_name,
