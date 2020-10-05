@@ -226,10 +226,8 @@ int main(int argc, char** argv)
     // Launch the asynchronous operation
     // The session is constructed with a strand to
     // ensure that handlers do not execute concurrently.
-    std::make_shared<session>(
-        ioc,
-        ctx
-    )->run(host, port, target, version);
+    session s(ioc, ctx);
+    s.run(host, port, target, version);
 
     // Run the I/O service. The call will return when
     // the get operation is complete.
