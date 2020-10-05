@@ -61,7 +61,7 @@ std::string get_string_to_sign(boost::posix_time::ptime time, std::string region
                         region + SLASH_DELIM + service + AWS_STR_TO_SIGN_SUFFIX;
 
     std::string hashed_canonical_request;
-    computeSHA256Hash(&canonical_request, &hashed_canonical_request);
+    computeSHA256Hash(canonical_request, hashed_canonical_request);
 
     std::string hexed_hashed_canon_req;
     boost::algorithm::hex(hashed_canonical_request, std::back_inserter(hexed_hashed_canon_req));
