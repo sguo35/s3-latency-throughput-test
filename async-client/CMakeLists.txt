@@ -19,5 +19,5 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 add_executable(async_client async_client.cpp)
 
 # list all deps for static linking
-target_link_libraries(async_client PUBLIC Boost::boost Threads::Threads ssl crypto)
+target_link_libraries(async_client PUBLIC ${Boost_LIBRARIES} Threads::Threads ssl crypto)
 target_compile_options(async_client PRIVATE)
