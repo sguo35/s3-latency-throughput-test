@@ -17,7 +17,7 @@ bool computeSHA256Hash(const std::string& unhashed, std::string& hashed)
 {
     bool success = false;
 
-    EVP_MD_CTX* context = EVP_MD_CTX_new();
+    EVP_MD_CTX* context = EVP_MD_CTX_create();
 
     if(context != NULL)
     {
@@ -42,7 +42,7 @@ bool computeSHA256Hash(const std::string& unhashed, std::string& hashed)
             }
         }
 
-        EVP_MD_CTX_free(context);
+        EVP_MD_CTX_destroy(context);
     }
 
     return success;
