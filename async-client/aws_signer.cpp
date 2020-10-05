@@ -9,6 +9,8 @@
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/beast/core/detail/base64.hpp>
+#include <boost/algorithm/hex.hpp>
+
 
 const size_t HMAC_DIGEST_SIZE = 64;
 
@@ -56,7 +58,31 @@ int main(int, char**)
 
     std::cout << pw1hashed << std::endl;
 
+    boost::posix_time::ptime t = boost::posix_time::microsec_clock::universal_time();
+    std::string region = "us-west-2";
+    std::string service = "s3";
+    std::string canonical_request = "test canonical request";
+
+    std::string string_to_sign = get_string_to_sign(t, region, service, canonical_request);
+    std::cout << string_to_sign << std::endl;
+
     return 0;
+}
+
+std::string get_string_to_sign(boost::posix_time::ptime time, std::string region,
+                            std::string service, std::string canonical_request) {
+    std::string scope = boost::posix_time::to_iso_string(time).substr(0, 8) + "/" + region + "/" + service + "/aws4_request";
+
+    std::string hashed_canonical_request;
+    computeSHA256Hash(&canonical_request, &hashed_canonical_request);
+
+    std::string hexed_hashed_canon_req;
+    boost::algorithm::hex(hashed_canonical_request, std::back_inserter(hexed_hashed_canon_req));
+
+    std::string str_to_sign = "AWS4-HMAC-SHA256" + "\n" + boost::posix_time::to_iso_string(time)
+                            + "\n" + scope + "\n" + hexed_hashed_canon_req;
+
+    return str_to_sign;
 }
 
 // std::string get_signature_key(std::string secret_key, std::string key, std::string bucket_name,
