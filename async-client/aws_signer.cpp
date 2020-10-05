@@ -254,6 +254,8 @@ std::string get_canonical_request(boost::posix_time::ptime time, std::string hos
 
     // HashedPayload
     canon_req += content_hash;
+
+    return canon_req;
 }
 
 int main(int, char**)
