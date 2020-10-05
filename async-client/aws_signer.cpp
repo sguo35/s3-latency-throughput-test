@@ -12,7 +12,7 @@
 #include <boost/algorithm/hex.hpp>
 
 
-const size_t HMAC_DIGEST_SIZE = 64;
+const size_t HMAC_DIGEST_SIZE = 32;
 
 // https://stackoverflow.com/a/40155962
 bool computeSHA256Hash(const std::string& unhashed, std::string& hashed)
@@ -75,7 +75,7 @@ void hex2stream(const std::string hexstr, std::string& str)
     }
 }
 
-const unsigned SHA256_DIGEST_LENGTH = 64;
+const unsigned int SHA256_DIGEST_LENGTH = 32;
 
 // https://gist.github.com/tsupo/112188/3fe993ca2f05cba75b139bef6472b4503fb27a2d
 void
@@ -144,7 +144,7 @@ hmac_sha256(
     memcpy( bufferOut, k_opad, 64 );
     memcpy( bufferOut + 64, tk2, SHA256_DIGEST_LENGTH );
 
-    SHA256( bufferOut, 64 + SHA256_DIGEST_LENGTH, digest );
+    SHA256( bufferOut, 64 + SHA256_DIGEST_LENGTH, (unsigned char*) digest );
 }
 
 const std::string NEWLINE("\n");
@@ -156,11 +156,7 @@ const std::string AWS_SIGNING_KEY_SUFFIX("aws4_request");
 
 std::string calculate_signature(std::string secret_key, boost::posix_time::ptime time, 
                                 std::string region, std::string service, std::string string_to_sign) {
-    std::string date_key;
-    std::string date_region_key;
-    std::string date_region_service_key;
-    std::string signing_key;
-
+                                    
     std::string date_key_hmac_key = AWS_STR_SECRET_SIGNING_PREFIX + secret_key;
     std::string date_key_hmac_data = boost::posix_time::to_iso_string(time).substr(0, 8);
 
@@ -170,7 +166,6 @@ std::string calculate_signature(std::string secret_key, boost::posix_time::ptime
     unsigned char date_key_digest[HMAC_DIGEST_SIZE];
 
     hmac_sha256(date_key_key, date_key_hmac_key.length(), date_key_text, date_key_hmac_data.length(), date_key_digest);
-    date_key(date_key_digest, HMAC_DIGEST_SIZE);
 
     // calculate DateRegionKey
     const unsigned char* date_region_key_text = (unsigned char*) region.c_str();
