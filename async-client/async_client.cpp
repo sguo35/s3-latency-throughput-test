@@ -226,7 +226,6 @@ int main(int argc, char** argv)
     // Launch the asynchronous operation
     // The session is constructed with a strand to
     // ensure that handlers do not execute concurrently.
-    session 
     std::make_shared<session>(
         ioc,
         ctx
