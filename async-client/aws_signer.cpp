@@ -75,7 +75,7 @@ void hex2stream(const std::string hexstr, std::string& str)
     }
 }
 
-const unsigned int SHA256_DIGEST_LENGTH = 32;
+const size_t SHA256_DIGEST_LENGTH = 32;
 
 // https://gist.github.com/tsupo/112188/3fe993ca2f05cba75b139bef6472b4503fb27a2d
 void
