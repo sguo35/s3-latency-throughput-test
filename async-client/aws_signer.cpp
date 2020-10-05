@@ -49,6 +49,31 @@ bool computeSHA256Hash(const std::string& unhashed, std::string& hashed)
 
     return success;
 }
+// https://stackoverflow.com/a/35599923
+// Convert string of chars to its representative string of hex numbers
+void stream2hex(const std::string str, std::string& hexstr, bool capital = false)
+{
+    hexstr.resize(str.size() * 2);
+    const size_t a = capital ? 'A' - 1 : 'a' - 1;
+
+    for (size_t i = 0, c = str[0] & 0xFF; i < hexstr.size(); c = str[i / 2] & 0xFF)
+    {
+        hexstr[i++] = c > 0x9F ? (c / 16 - 9) | a : c / 16 | '0';
+        hexstr[i++] = (c & 0xF) > 9 ? (c % 16 - 9) | a : c % 16 | '0';
+    }
+}
+
+// Convert string of hex numbers to its equivalent char-stream
+void hex2stream(const std::string hexstr, std::string& str)
+{
+    str.resize((hexstr.size() + 1) / 2);
+
+    for (size_t i = 0, j = 0; i < str.size(); i++, j++)
+    {
+        str[i] = (hexstr[j] & '@' ? hexstr[j] + 9 : hexstr[j]) << 4, j++;
+        str[i] |= (hexstr[j] & '@' ? hexstr[j] + 9 : hexstr[j]) & 0xF;
+    }
+}
 
 const std::string NEWLINE("\n");
 const std::string SLASH_DELIM("/");
@@ -64,7 +89,7 @@ std::string get_string_to_sign(boost::posix_time::ptime time, std::string region
     computeSHA256Hash(canonical_request, hashed_canonical_request);
 
     std::string hexed_hashed_canon_req;
-    boost::algorithm::hex(hashed_canonical_request, std::back_inserter(hexed_hashed_canon_req));
+    stream2hex(hashed_canonical_request, hexed_hashed_canon_req);
 
     std::string str_to_sign = AWS_HMAC_STR_PREFIX + NEWLINE + boost::posix_time::to_iso_string(time)
                             + NEWLINE + scope + NEWLINE + hexed_hashed_canon_req;
