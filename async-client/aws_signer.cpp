@@ -247,7 +247,7 @@ std::string get_canonical_request(boost::posix_time::ptime time, std::string hos
     canonical_headers += CONTENT_SHA256_HEADER + COLON_DELIM + content_hash + NEWLINE;
     canonical_headers += DATE_HEADER + COLON_DELIM + (boost::posix_time::to_iso_string(time) + ISO8601_ANY_TIME_ZONE_SUFFIX) + NEWLINE;
 
-    canon_req += canonical_headers;
+    canon_req += canonical_headers + NEWLINE;
 
     std::string signed_headers = HOST_HEADER + SEMICOLON_DELIM + CONTENT_SHA256_HEADER + SEMICOLON_DELIM + DATE_HEADER;
     canon_req += signed_headers + NEWLINE;
