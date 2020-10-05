@@ -51,8 +51,8 @@ class session : public std::enable_shared_from_this<session>
 public:
     session(net::io_context& io_context,
         ssl::context& ctx)
-    : resolver_(ex)
-    , stream_(ex, ctx)
+    : resolver_(io_context)
+    , stream_(io_context, ctx)
     {
     }
 
