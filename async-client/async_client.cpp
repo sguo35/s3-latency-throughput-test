@@ -49,8 +49,7 @@ class session : public std::enable_shared_from_this<session>
     http::response<http::string_body> res_;
 
 public:
-    session(
-        net::any_io_executor ex,
+    session(net::io_context& io_context,
         ssl::context& ctx)
     : resolver_(ex)
     , stream_(ex, ctx)
@@ -228,9 +227,9 @@ int main(int argc, char** argv)
     // The session is constructed with a strand to
     // ensure that handlers do not execute concurrently.
     std::make_shared<session>(
-        net::make_strand(ioc),
+        ioc,
         ctx
-        )->run(host, port, target, version);
+    )->run(host, port, target, version);
 
     // Run the I/O service. The call will return when
     // the get operation is complete.
