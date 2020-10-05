@@ -7,7 +7,7 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
 find_package(Boost 1.73 REQUIRED)
-
+INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
