@@ -165,37 +165,37 @@ std::string calculate_signature(std::string secret_key, boost::posix_time::ptime
     std::string date_key_hmac_data = boost::posix_time::to_iso_string(time).substr(0, 8);
 
     // calculate DateKey
-    const unsigned char* date_key_key = date_key_hmac_key.c_str();
-    const unsigned char* date_key_text = date_key_hmac_data.c_str();
+    const unsigned char* date_key_key = (unsigned char*) date_key_hmac_key.c_str();
+    const unsigned char* date_key_text = (unsigned char*) date_key_hmac_data.c_str();
     unsigned char date_key_digest[HMAC_DIGEST_SIZE];
 
     hmac_sha256(date_key_key, date_key_hmac_key.length(), date_key_text, date_key_hmac_data.length(), date_key_digest);
     date_key(date_key_digest, HMAC_DIGEST_SIZE);
 
     // calculate DateRegionKey
-    const unsigned char* date_region_key_text = region.c_str();
+    const unsigned char* date_region_key_text = (unsigned char*) region.c_str();
     unsigned char date_region_key_digest[HMAC_DIGEST_SIZE];
 
     hmac_sha256(date_key_digest, HMAC_DIGEST_SIZE, date_region_key_text, region.length(), date_region_key_digest);
 
     // calculate DateRegionServiceKey
-    const unsigned char* date_region_service_key_text = service.c_str();
+    const unsigned char* date_region_service_key_text = (unsigned char*) service.c_str();
     unsigned char date_region_service_key_digest[HMAC_DIGEST_SIZE];
 
     hmac_sha256(date_region_key_digest, HMAC_DIGEST_SIZE, date_region_service_key_text, service.length(), date_region_service_key_digest);
 
     // calculate SigningKey
-    const unsigned char* signing_key_text = AWS_SIGNING_KEY_SUFFIX.c_str();
+    const unsigned char* signing_key_text = (unsigned char*) AWS_SIGNING_KEY_SUFFIX.c_str();
     unsigned char signing_key_digest[HMAC_DIGEST_SIZE];
 
     hmac_sha256(date_region_service_key_digest, HMAC_DIGEST_SIZE, signing_key_text, AWS_SIGNING_KEY_SUFFIX.length(), signing_key_digest);
 
     // final signature
-    const unsigned char* string_to_sign_text = string_to_sign.c_str();
+    const unsigned char* string_to_sign_text = (unsigned char*) string_to_sign.c_str();
     unsigned char signature_digest[HMAC_DIGEST_SIZE];
 
     hmac_sha256(signing_key_digest, HMAC_DIGEST_SIZE, string_to_sign_text, string_to_sign.length(), signature_digest);
-    const std::string final_signature(signature_digest, HMAC_DIGEST_SIZE);
+    const std::string final_signature((char*) signature_digest, HMAC_DIGEST_SIZE);
     std::string final_signature_hex;
 
     stream2hex(final_signature, final_signature_hex);
