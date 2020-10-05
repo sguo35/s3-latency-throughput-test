@@ -222,15 +222,27 @@ int main(int, char**)
 
     std::cout << pw1hashed << std::endl;
 
-    boost::posix_time::ptime t = boost::posix_time::microsec_clock::universal_time();
-    std::string region("us-west-2");
+    //boost::posix_time::ptime t = boost::posix_time::microsec_clock::universal_time();
+    boost::posix_time::ptime t = boost::posix_time::from_iso_string(std::string("20130524T000000Z"));
+    std::string region("us-east-1");
     std::string service("s3");
-    std::string canonical_request("test canonical request");
+    std::string canonical_request(
+"GET
+/test.txt
+
+host:examplebucket.s3.amazonaws.com
+range:bytes=0-9
+x-amz-content-sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+x-amz-date:20130524T000000Z
+
+host;range;x-amz-content-sha256;x-amz-date
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    );
 
     std::string string_to_sign = get_string_to_sign(t, region, service, canonical_request);
     std::cout << string_to_sign << "\n" << std::endl;
 
-    std::string secret_key("test secret");
+    std::string secret_key("wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY");
 
     std::string signature = calculate_signature(secret_key, t, 
                                 region, service, string_to_sign);
