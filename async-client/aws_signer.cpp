@@ -230,13 +230,15 @@ std::string get_canonical_request(boost::posix_time::ptime time, std::string hos
     canon_req += canonical_uri + NEWLINE;
 
     // compute the sha256 hash of the content
-    std::string content_str(content, content_length);
     std::string content_hash;
 
-    if (content_length > 0)
+    if (content_length > 0) {
+        std::string content_str(content, content_length);
         computeSHA256Hash(content_str, content_hash);
-    else
+    }
+    else {
         content_hash = std::string("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
+    }
 
     // not using any query string params
     canon_req += NEWLINE;
