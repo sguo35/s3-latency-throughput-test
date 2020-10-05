@@ -13,6 +13,7 @@
 //
 //------------------------------------------------------------------------------
 
+
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
 #include <boost/beast/ssl.hpp>
@@ -40,7 +41,7 @@ fail(beast::error_code ec, char const* what)
 }
 
 // Performs an HTTP GET and prints the response
-class session
+class session : public std::enable_shared_from_this<session>
 {
     tcp::resolver resolver_;
     beast::ssl_stream<beast::tcp_stream> stream_;
@@ -49,10 +50,12 @@ class session
     http::response<http::string_body> res_;
 
 public:
-    session(net::io_context& io_context,
+    explicit
+    session(
+        net::any_io_executor ex,
         ssl::context& ctx)
-    : resolver_(io_context)
-    , stream_(io_context, ctx)
+    : resolver_(ex)
+    , stream_(ex, ctx)
     {
     }
 
@@ -85,7 +88,7 @@ public:
             port,
             beast::bind_front_handler(
                 &session::on_resolve,
-                this));
+                shared_from_this()));
     }
 
     void
@@ -104,7 +107,7 @@ public:
             results,
             beast::bind_front_handler(
                 &session::on_connect,
-                this));
+                shared_from_this()));
     }
 
     void
@@ -118,7 +121,7 @@ public:
             ssl::stream_base::client,
             beast::bind_front_handler(
                 &session::on_handshake,
-                this));
+                shared_from_this()));
     }
 
     void
@@ -134,7 +137,7 @@ public:
         http::async_write(stream_, req_,
             beast::bind_front_handler(
                 &session::on_write,
-                this));
+                shared_from_this()));
     }
 
     void
@@ -151,7 +154,7 @@ public:
         http::async_read(stream_, buffer_, res_,
             beast::bind_front_handler(
                 &session::on_read,
-                this));
+                shared_from_this()));
     }
 
     void
@@ -174,7 +177,7 @@ public:
         stream_.async_shutdown(
             beast::bind_front_handler(
                 &session::on_shutdown,
-                this));
+                shared_from_this()));
     }
 
     void
@@ -227,9 +230,9 @@ int main(int argc, char** argv)
     // The session is constructed with a strand to
     // ensure that handlers do not execute concurrently.
     std::make_shared<session>(
-        ioc,
+        net::make_strand(ioc),
         ctx
-    )->run(host, port, target, version);
+        )->run(host, port, target, version);
 
     // Run the I/O service. The call will return when
     // the get operation is complete.
