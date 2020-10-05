@@ -77,7 +77,7 @@ public:
         req_.method(http::verb::get);
         req_.target(target);
         req_.set(http::field::host, host);
-        req_.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
+        req_.set(http::field::authorization, "TODO_AUTH_STRING_GOES_HERE");
 
         // Look up the domain name
         resolver_.async_resolve(
@@ -192,6 +192,8 @@ public:
         // If we get here then the connection is closed gracefully
     }
 };
+
+
 
 //------------------------------------------------------------------------------
 
