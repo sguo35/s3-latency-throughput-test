@@ -227,7 +227,7 @@ int main(int, char**)
     std::string region("us-east-1");
     std::string service("s3");
     std::string canonical_request(
-"GET
+R"GET
 /test.txt
 
 host:examplebucket.s3.amazonaws.com
