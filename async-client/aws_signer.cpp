@@ -286,7 +286,7 @@ std::string get_canonical_request(boost::posix_time::ptime time, std::string hos
     return canon_req;
 }
 
-const std::string AUTH_HEADER("AWS-HMAC-SHA256");
+const std::string AUTH_HEADER("AWS4-HMAC-SHA256");
 const std::string CREDENTIAL_TAG("Credential");
 const std::string EQUALS_DELIM("=");
 const std::string SPACE_DELIM(" ");
