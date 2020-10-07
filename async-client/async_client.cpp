@@ -35,6 +35,8 @@ namespace net = boost::asio;            // from <boost/asio.hpp>
 namespace ssl = boost::asio::ssl;       // from <boost/asio/ssl.hpp>
 using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
 
+std::chrono::high_resolution_clock::time_point start;
+
 //------------------------------------------------------------------------------
 
 // Report a failure
@@ -85,10 +87,9 @@ public:
         req_.method(http::verb::get);
         req_.target(target);
 	    for(int i = 0; i < other_headers.size(); i++)
-{
-        std::cout << other_headers[i].first << ", " << other_headers[i].second << std::endl;
-	req_.set(other_headers[i].first, other_headers[i].second);
-}
+        {
+            req_.set(other_headers[i].first, other_headers[i].second);
+        }
 
         req_.set(http::field::authorization, auth_header);
 
@@ -172,7 +173,7 @@ public:
         beast::error_code ec,
         std::size_t bytes_transferred)
     {
-	printf("%d bytes transferred\n", bytes_transferred);
+	    // printf("%d bytes transferred ", bytes_transferred);
         boost::ignore_unused(bytes_transferred);
 
         if(ec)
@@ -245,10 +246,6 @@ int main(int argc, char** argv)
     std::string auth_header = get_authorization_header(access_key, secret_key,
                     t, host_str, path, http_verb, body, body_len, region, service);
     auto headers = get_other_headers(t, host_str, path, http_verb, body, body_len);
-    for(int i = 0; i < headers.size(); i++)
-{
-	std::cout << headers[i].first << ", " << headers[i].second << std::endl;
-}
 
     // The io_context is required for all I/O
     net::io_context ioc;
@@ -265,11 +262,25 @@ int main(int argc, char** argv)
     // The session is constructed with a strand to
     // ensure that handlers do not execute concurrently.
     session s(ioc, ctx);
-    s.run(host, port, target, version, auth_header, headers);
+    
+    // start timing
+    start = std::chrono::high_resolution_clock::now();
+    std::cout.setstate(std::ios_base::badbit);
+
+    for (int i = 0; i < 1000; i++)
+        s.run(host, port, target, version, auth_header, headers);
 
     // Run the I/O service. The call will return when
     // the get operation is complete.
     ioc.run();
+
+    auto end = std::chrono::high_resolution_clock::now(); 
+
+    double time_taken =  
+        std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count(); 
+    std::cout.clear();
+    std::cout << "Took " << time_taken * 1e-6 << " ms " <<
+        time_taken * 1e-9 << " sec. " << std::endl;
 
     return EXIT_SUCCESS;
 }
