@@ -268,8 +268,10 @@ int main(int argc, char** argv)
     std::cout.setstate(std::ios_base::badbit);
 
     for (int i = 0; i < 1000; i++) {
-        session s(ioc, ctx);
-        s.run(host, port, target, version, auth_header, headers);
+        // prevent session from being destructed before io_service starts
+        // okay to leak memory since this is a short benchmark
+        session* s = new session(ioc, ctx);
+        s->run(host, port, target, version, auth_header, headers);
     }
 
     // Run the I/O service. The call will return when
