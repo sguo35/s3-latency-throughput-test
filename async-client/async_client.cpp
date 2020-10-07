@@ -261,14 +261,16 @@ int main(int argc, char** argv)
     // Launch the asynchronous operation
     // The session is constructed with a strand to
     // ensure that handlers do not execute concurrently.
-    session s(ioc, ctx);
+    
     
     // start timing
     start = std::chrono::high_resolution_clock::now();
     std::cout.setstate(std::ios_base::badbit);
 
-    for (int i = 0; i < 1000; i++)
+    for (int i = 0; i < 1000; i++) {
+        session s(ioc, ctx);
         s.run(host, port, target, version, auth_header, headers);
+    }
 
     // Run the I/O service. The call will return when
     // the get operation is complete.
