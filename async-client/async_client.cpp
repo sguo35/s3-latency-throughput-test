@@ -180,7 +180,7 @@ public:
             return fail(ec, "read");
 
         // Write the message to standard out
-        std::cout << res_ << std::endl;
+        //std::cout << res_ << std::endl;
 
         // Set a timeout on the operation
         beast::get_lowest_layer(stream_).expires_after(std::chrono::seconds(30));
@@ -208,7 +208,10 @@ public:
     }
 };
 
-
+void* runner(void* param) {
+    net::io_context* io = (net::io_context*) param;
+    io->run();
+}
 
 //------------------------------------------------------------------------------
 
@@ -276,6 +279,11 @@ int main(int argc, char** argv)
 
     // Run the I/O service. The call will return when
     // the get operation is complete.
+    for (int i = 0; i < 16; i++) {
+	pthread_t thread;
+        pthread_create(&thread, NULL, runner, (void*) &ioc);
+	pthread_detach(thread);
+    }
     ioc.run();
 
     auto end = std::chrono::high_resolution_clock::now(); 

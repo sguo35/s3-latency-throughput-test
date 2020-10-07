@@ -55,10 +55,9 @@ async function testRead(s3Params, startTime, workers, size) {
     console.log("READ from " + bucketName + "/" + keyName, "in", endTime - startTime, "ms", workers, "workers", size, "size");
 }
 async function test() {
-    for (let numWorkers of [1, 2, 4, 8, 16, 32, 64, 128]) {
-        for (let size of [1024, 1024 * 1024, 1024 * 1024 * 1024]) {
-                for (let i = 0; i < 10; i++) {
-                let newSize = Math.round(size / numWorkers);
+        for (let size of [1000 * 1000]) {
+                for (let i = 0; i < 3; i++) {
+                let newSize = Math.round(size);
                 let garbageBuffer = Buffer.alloc(newSize)
 
                 var s3ParamsRead = {
@@ -74,11 +73,9 @@ async function test() {
 
 
                 var startTime = performance.now();
-                await testWrite(s3ParamsWrite, startTime, numWorkers, size)
                 startTime = performance.now();
-                await testRead(s3ParamsRead, startTime, numWorkers, size)
+                testRead(s3ParamsRead, startTime, 1000, size)
             }
         }
-    }
 }
 test();
