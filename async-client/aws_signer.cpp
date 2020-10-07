@@ -5,6 +5,8 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <vector>
+#include <utility>
 #include <openssl/evp.h>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -224,6 +226,34 @@ const std::string DATE_HEADER("x-amz-date");
 const std::string COLON_DELIM(":");
 const std::string SEMICOLON_DELIM(";");
 
+std::string compute_content_hash(char* content, size_t content_length) {
+    std::string content_hash;
+    if (content_length > 0) {
+        std::string content_str(content, content_length);
+        computeSHA256Hash(content_str, content_hash);
+    }
+    else {
+        content_hash = std::string("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
+    }
+
+    return content_hash;
+}
+
+std::vector<std::pair<std::string, std::string>> get_other_headers(boost::posix_time::ptime time, std::string host, std::string path,
+                                                            std::string http_verb, char* content, size_t content_length) {
+    std::vector<std::pair<std::string, std::string>> vec;
+    auto host_header = std::make_pair(HOST_HEADER, host);
+    auto sha256_header = std::make_pair(CONTENT_SHA256_HEADER, compute_content_hash(content, content_length));
+    auto date_header = std::make_pair(DATE_HEADER, boost::posix_time::to_iso_string(time) + ISO8601_ANY_TIME_ZONE_SUFFIX);
+
+    vec.push_back(host_header);
+    vec.push_back(sha256_header);
+    vec.push_back(date_header);
+
+    return vec;
+}
+
+
 std::string get_canonical_request(boost::posix_time::ptime time, std::string host,
                                 std::string path,
                                 std::string http_verb, char* content, size_t content_length) {
@@ -236,15 +266,7 @@ std::string get_canonical_request(boost::posix_time::ptime time, std::string hos
     canon_req += canonical_uri + NEWLINE;
 
     // compute the sha256 hash of the content
-    std::string content_hash;
-
-    if (content_length > 0) {
-        std::string content_str(content, content_length);
-        computeSHA256Hash(content_str, content_hash);
-    }
-    else {
-        content_hash = std::string("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
-    }
+    std::string content_hash = comptue_content_hash(content, content_length);
 
     // not using any query string params
     canon_req += NEWLINE;

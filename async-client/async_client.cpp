@@ -23,6 +23,10 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <stdlib.h>
+#include <vector>
+
+#include "aws_signer.hpp"
 
 namespace beast = boost::beast;         // from <boost/beast.hpp>
 namespace http = beast::http;           // from <boost/beast/http.hpp>
@@ -62,7 +66,10 @@ public:
         char const* host,
         char const* port,
         char const* target,
-        int version)
+        int version,
+        std::string& auth_header,
+        std::vector<std::pair<std::string, std::string>>& other_headers
+        )
     {
         // Set SNI Hostname (many hosts need this to handshake successfully)
         if(! SSL_set_tlsext_host_name(stream_.native_handle(), host))
@@ -76,8 +83,16 @@ public:
         req_.version(version);
         req_.method(http::verb::get);
         req_.target(target);
-        req_.set(http::field::host, host);
-        req_.set(http::field::authorization, "TODO_AUTH_STRING_GOES_HERE");
+
+        for (auto it = other_headers.begin();; it < other_headers.end(); it++) {
+            auto pair = *it;
+            std::string key = pair.get(0);
+            std::string val = pair.get(1);
+
+            req_.set(key, val);
+        }
+
+        req_.set(http::field::authorization, auth_header);
 
         // Look up the domain name
         resolver_.async_resolve(
@@ -213,6 +228,24 @@ int main(int argc, char** argv)
     auto const port = argv[2];
     auto const target = argv[3];
     int version = argc == 5 && !std::strcmp("1.0", argv[4]) ? 10 : 11;
+
+    char* access_key_cstr = getenv("AWS_ACCESS_KEY");
+    char* secret_key_cstr = getenv("AWS_SECRET_KEY");
+
+    std::string access_key(access_key_cstr);
+    std::string secret_key(secret_key_cstr);
+    boost::posix_time::ptime t = boost::posix_time::microsec_clock::universal_time();
+    std::string host_str(host);
+    std::string path(target);
+    std::string http_verb("GET");
+    char* body = "";
+    size_t body_len = 0;
+    std::string region("us-west-2");
+    std::string service("s3");
+    
+    std::string auth_header = get_authorization_header(access_key, secret_key,
+                    t, host_str, path, http_verb, body, body_len, region, service);
+    auto headers = get_other_headers(t, host_str, path, http_verb, body, body_len);
 
     // The io_context is required for all I/O
     net::io_context ioc;
