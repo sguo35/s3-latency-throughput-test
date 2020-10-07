@@ -84,7 +84,7 @@ public:
         req_.method(http::verb::get);
         req_.target(target);
 
-        for (auto it = other_headers.begin();; it < other_headers.end(); it++) {
+        for (auto it = other_headers.begin(); it < other_headers.end(); it++) {
             auto pair = *it;
             std::string key = pair.get(0);
             std::string val = pair.get(1);
@@ -262,7 +262,7 @@ int main(int argc, char** argv)
     // The session is constructed with a strand to
     // ensure that handlers do not execute concurrently.
     session s(ioc, ctx);
-    s.run(host, port, target, version);
+    s.run(host, port, target, version, auth_header, headers);
 
     // Run the I/O service. The call will return when
     // the get operation is complete.
