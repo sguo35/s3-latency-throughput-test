@@ -285,7 +285,7 @@ std::string get_authorization_header(std::string access_key, std::string secret_
     ret_header += SLASH_DELIM;
     ret_header += get_scope(t, region, service);
 
-    ret_header += REQ_GET_SIGNED_HEADERS + COMMA_DELIM;
+    ret_header += COMMA_DELIM + SIGNED_HEADER_TAG + EQUALS_DELIM + REQ_GET_SIGNED_HEADERS + COMMA_DELIM;
     ret_header += SIGNATURE_TAG + EQUALS_DELIM;
 
     std::string canonical_request = get_canonical_request(t, host, path, http_verb, body, body_len);
