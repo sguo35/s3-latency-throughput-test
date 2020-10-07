@@ -86,8 +86,8 @@ public:
 
         for (auto it = other_headers.begin(); it < other_headers.end(); it++) {
             auto pair = *it;
-            std::string key = pair.get(0);
-            std::string val = pair.get(1);
+            std::string key = std::get<0>(pair);
+            std::string val = std::get<1>(pair);
 
             req_.set(key, val);
         }
