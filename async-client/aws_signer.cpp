@@ -198,10 +198,16 @@ std::string calculate_signature(std::string secret_key, boost::posix_time::ptime
     return final_signature_hex;
 }
 
+std::string get_scope(boost::posix_time::ptime time, std::string region, std::string service) {
+    std::string ret = boost::posix_time::to_iso_string(time).substr(0, 8) + SLASH_DELIM + 
+                        region + SLASH_DELIM + service + AWS_STR_TO_SIGN_SUFFIX;
+
+    return ret;
+}
+
 std::string get_string_to_sign(boost::posix_time::ptime time, std::string region,
                             std::string service, std::string canonical_request) {
-    std::string scope = boost::posix_time::to_iso_string(time).substr(0, 8) + SLASH_DELIM + 
-                        region + SLASH_DELIM + service + AWS_STR_TO_SIGN_SUFFIX;
+    std::string scope = get_scope(time, region, service);
 
     std::string hashed_canonical_request;
     computeSHA256Hash(canonical_request, hashed_canonical_request);
@@ -258,48 +264,55 @@ std::string get_canonical_request(boost::posix_time::ptime time, std::string hos
     return canon_req;
 }
 
+const std::string AUTH_HEADER("AWS-HMAC-SHA256");
+const std::string CREDENTIAL_TAG("Credential");
+const std::string EQUALS_DELIM("=");
+const std::string SPACE_DELIM(" ");
+const std::string COMMA_DELIM(",");
+const std::string SIGNED_HEADER_TAG("SignedHeaders");
+const std::string REQ_GET_SIGNED_HEADERS("host;x-amz-date");
+const std::string SIGNATURE_TAG("Signature");
+
+std::string get_authorization_header(std::string access_key, std::string secret_key, boost::posix_time::ptime t, std::string host,
+                                    std::string path, std::string http_verb, std::string body, size_t body_len,
+                                    std::string region, std::string service) {
+
+
+    std::string ret_header("");
+    ret_header += AUTH_HEADER + SPACE_DELIM;
+    ret_header += CREDENTIAL_TAG + EQUALS_DELIM + access_key;
+    
+    ret_header += SLASH_DELIM;
+    ret_header += get_scope(t, region, service);
+
+    ret_header += REQ_GET_SIGNED_HEADERS + COMMA_DELIM;
+    ret_header += SIGNATURE_TAG + EQUALS_DELIM;
+
+    std::string canonical_request = get_canonical_request(t, host, path, http_verb, body, body_len);
+    std::string string_to_sign = get_string_to_sign(t, region, service, canonical_request);
+    std::string signature = calculate_signature(secret_key, t, region, service, string_to_sign);
+
+    ret_header += signature;
+
+    return ret_header;
+}
+
 int main(int, char**)
 {
-    std::string pw1(""), pw1hashed;
-
-    computeSHA256Hash(pw1, pw1hashed);
-
-    std::cout << pw1hashed << std::endl;
-
-    //boost::posix_time::ptime t = boost::posix_time::microsec_clock::universal_time();
+    std::string access_key("AKIAIOSFODNN7EXAMPLE");
+    std::string secret_key("wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY");
     boost::posix_time::ptime t = boost::posix_time::from_iso_string(std::string("20130524T000000Z"));
+    std::string host("examplebucket.s3.amazonaws.com");
+    std::string path("test.txt");
+    std::string http_verb("GET");
+    std::string body("");
+    size_t body_len = 0;
     std::string region("us-east-1");
     std::string service("s3");
 
-    const char* c_req = ""
-R"(GET
-/test.txt
+    std::cout << "Generated:" << "\n\n" << get_authorization_header(access_key, secret_key, t, host, path, http_verb, body, body_len, region, service) << "\n\n\n";
 
-host:examplebucket.s3.amazonaws.com
-range:bytes=0-9
-x-amz-content-sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
-x-amz-date:20130524T000000Z
-
-host;range;x-amz-content-sha256;x-amz-date
-e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855)";
-    std::string canonical_request(c_req);
-
-    std::cout << "Original canonical req\n" << canonical_request << "\n" << std::endl;
-
-    char* body = "";
-    std::string generated_c_request = get_canonical_request(t, "examplebucket.s3.amazonaws.com",
-                                "test.txt",
-                                "GET", body, 0);
-    std::cout << "Generated canonical req\n" << generated_c_request << "\n" << std::endl;
-
-    std::string string_to_sign = get_string_to_sign(t, region, service, canonical_request);
-    std::cout << string_to_sign << "\n" << std::endl;
-
-    std::string secret_key("wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY");
-
-    std::string signature = calculate_signature(secret_key, t, 
-                                region, service, string_to_sign);
-    std::cout << signature << std::endl;
+    std::cout << "Reference" << "\n\n" << "AWS4-HMAC-SHA256 Credential=AKIAIOSFODNN7EXAMPLE/20130524/us-east-1/s3/aws4_request,SignedHeaders=host;range;x-amz-content-sha256;x-amz-date,Signature=f0e8bdb87c964420e857bd35b5d6ed310bd44f0170aba48dd91039c6036bdb41" << "\n\n\n";
     return 0;
 }
 
