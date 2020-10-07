@@ -318,7 +318,7 @@ std::string get_authorization_header(std::string access_key, std::string secret_
 
     return ret_header;
 }
-
+/*
 int main(int, char**)
 {
     std::string access_key("AKIAIOSFODNN7EXAMPLE");
@@ -337,6 +337,7 @@ int main(int, char**)
     std::cout << "Reference" << "\n\n" << "AWS4-HMAC-SHA256 Credential=AKIAIOSFODNN7EXAMPLE/20130524/us-east-1/s3/aws4_request,SignedHeaders=host;range;x-amz-content-sha256;x-amz-date,Signature=f0e8bdb87c964420e857bd35b5d6ed310bd44f0170aba48dd91039c6036bdb41" << "\n\n\n";
     return 0;
 }
+*/
 
 // std::string get_signature_key(std::string secret_key, std::string key, std::string bucket_name,
 //                     std::string host, char* payload, char* payload_length,
