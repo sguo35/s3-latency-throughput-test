@@ -17,12 +17,12 @@ endif()
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -lstdc++")
 
-add_executable(async_client async_client.cpp)
-add_executable(aws_signer aws_signer.cpp)
+add_executable(async_client async_client.cpp aws_signer.cpp aws_signer.hpp)
+#add_executable(aws_signer aws_signer.cpp)
 
 # list all deps for static linking
 target_link_libraries(async_client LINK_PUBLIC ${Boost_LIBRARIES} Threads::Threads ssl crypto)
 target_compile_options(async_client PRIVATE)
 
-target_link_libraries(aws_signer LINK_PUBLIC ${Boost_LIBRARIES} Threads::Threads ssl crypto)
-target_compile_options(aws_signer PRIVATE)
+#target_link_libraries(aws_signer LINK_PUBLIC ${Boost_LIBRARIES} Threads::Threads ssl crypto)
+#target_compile_options(aws_signer PRIVATE)

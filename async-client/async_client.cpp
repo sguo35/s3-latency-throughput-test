@@ -25,6 +25,7 @@
 #include <string>
 #include <stdlib.h>
 #include <vector>
+#include <stdio.h>
 
 #include "aws_signer.hpp"
 
@@ -83,14 +84,11 @@ public:
         req_.version(version);
         req_.method(http::verb::get);
         req_.target(target);
-
-        for (auto it = other_headers.begin(); it < other_headers.end(); it++) {
-            auto pair = *it;
-            std::string key = std::get<0>(pair);
-            std::string val = std::get<1>(pair);
-
-            req_.set(key, val);
-        }
+	    for(int i = 0; i < other_headers.size(); i++)
+{
+        std::cout << other_headers[i].first << ", " << other_headers[i].second << std::endl;
+	req_.set(other_headers[i].first, other_headers[i].second);
+}
 
         req_.set(http::field::authorization, auth_header);
 
@@ -174,6 +172,7 @@ public:
         beast::error_code ec,
         std::size_t bytes_transferred)
     {
+	printf("%d bytes transferred\n", bytes_transferred);
         boost::ignore_unused(bytes_transferred);
 
         if(ec)
@@ -234,7 +233,7 @@ int main(int argc, char** argv)
 
     std::string access_key(access_key_cstr);
     std::string secret_key(secret_key_cstr);
-    boost::posix_time::ptime t = boost::posix_time::microsec_clock::universal_time();
+    boost::posix_time::ptime t = boost::posix_time::second_clock::universal_time();
     std::string host_str(host);
     std::string path(target);
     std::string http_verb("GET");
@@ -246,6 +245,10 @@ int main(int argc, char** argv)
     std::string auth_header = get_authorization_header(access_key, secret_key,
                     t, host_str, path, http_verb, body, body_len, region, service);
     auto headers = get_other_headers(t, host_str, path, http_verb, body, body_len);
+    for(int i = 0; i < headers.size(); i++)
+{
+	std::cout << headers[i].first << ", " << headers[i].second << std::endl;
+}
 
     // The io_context is required for all I/O
     net::io_context ioc;

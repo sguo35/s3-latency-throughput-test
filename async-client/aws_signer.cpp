@@ -262,7 +262,7 @@ std::string get_canonical_request(boost::posix_time::ptime time, std::string hos
     std::string canon_req("");
     canon_req += http_verb + NEWLINE;
 
-    std::string canonical_uri = SLASH_DELIM + path;
+    std::string canonical_uri = path;
     canon_req += canonical_uri + NEWLINE;
 
     // compute the sha256 hash of the content
@@ -311,7 +311,9 @@ std::string get_authorization_header(std::string access_key, std::string secret_
     ret_header += SIGNATURE_TAG + EQUALS_DELIM;
 
     std::string canonical_request = get_canonical_request(t, host, path, http_verb, body, body_len);
+    printf("%s\n", canonical_request.c_str());
     std::string string_to_sign = get_string_to_sign(t, region, service, canonical_request);
+    printf("%s\n", string_to_sign.c_str());
     std::string signature = calculate_signature(secret_key, t, region, service, string_to_sign);
 
     ret_header += signature;
