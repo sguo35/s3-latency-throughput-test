@@ -274,7 +274,7 @@ const std::string REQ_GET_SIGNED_HEADERS("host;x-amz-date");
 const std::string SIGNATURE_TAG("Signature");
 
 std::string get_authorization_header(std::string access_key, std::string secret_key, boost::posix_time::ptime t, std::string host,
-                                    std::string path, std::string http_verb, std::string body, size_t body_len,
+                                    std::string path, std::string http_verb, char* body, size_t body_len,
                                     std::string region, std::string service) {
 
 
@@ -305,7 +305,7 @@ int main(int, char**)
     std::string host("examplebucket.s3.amazonaws.com");
     std::string path("test.txt");
     std::string http_verb("GET");
-    std::string body("");
+    char* body = "";
     size_t body_len = 0;
     std::string region("us-east-1");
     std::string service("s3");
