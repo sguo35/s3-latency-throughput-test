@@ -270,7 +270,7 @@ const std::string EQUALS_DELIM("=");
 const std::string SPACE_DELIM(" ");
 const std::string COMMA_DELIM(",");
 const std::string SIGNED_HEADER_TAG("SignedHeaders");
-const std::string REQ_GET_SIGNED_HEADERS("host;x-amz-date");
+const std::string REQ_GET_SIGNED_HEADERS("host;x-amz-content-sha256;x-amz-date");
 const std::string SIGNATURE_TAG("Signature");
 
 std::string get_authorization_header(std::string access_key, std::string secret_key, boost::posix_time::ptime t, std::string host,
