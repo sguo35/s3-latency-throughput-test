@@ -15,7 +15,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3 -lstdc++")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -lstdc++ -march=native")
 
 add_executable(async_client async_client.cpp aws_signer.cpp aws_signer.hpp)
 add_executable(async_client_insecure async_client_insecure.cpp aws_signer.cpp aws_signer.hpp)
