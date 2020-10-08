@@ -54,6 +54,7 @@ class session
     beast::flat_buffer buffer_; // (Must persist between reads)
     http::request<http::empty_body> req_;
     http::response<http::string_body> res_;
+    http::response_parser<http::string_body> parser;
 
 public:
     session(net::io_context& io_context,
@@ -61,6 +62,7 @@ public:
     : resolver_(io_context)
     , stream_(io_context, ctx)
     {
+	    parser.body_limit(1844674407370955);
     }
 
     // Start the asynchronous operation
@@ -162,7 +164,7 @@ public:
             return fail(ec, "write");
 
         // Receive the HTTP response
-        http::async_read(stream_, buffer_, res_,
+        http::async_read(stream_, buffer_, parser,
             beast::bind_front_handler(
                 &session::on_read,
                 this));
@@ -279,7 +281,7 @@ int main(int argc, char** argv)
 
     // Run the I/O service. The call will return when
     // the get operation is complete.
-    for (int i = 0; i < 16; i++) {
+    for (int i = 0; i < 0; i++) {
 	pthread_t thread;
         pthread_create(&thread, NULL, runner, (void*) &ioc);
 	pthread_detach(thread);
