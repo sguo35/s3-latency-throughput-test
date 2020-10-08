@@ -157,27 +157,6 @@ public:
 
         // Set a timeout on the operation
         beast::get_lowest_layer(stream_).expires_after(std::chrono::seconds(30));
-
-        // Gracefully close the stream
-        stream_.async_shutdown(
-            beast::bind_front_handler(
-                &session::on_shutdown,
-                this));
-    }
-
-    void
-    on_shutdown(beast::error_code ec)
-    {
-        if(ec == net::error::eof)
-        {
-            // Rationale:
-            // http://stackoverflow.com/questions/25587403/boost-asio-ssl-async-shutdown-always-finishes-with-an-error
-            ec = {};
-        }
-        if(ec)
-            return fail(ec, "shutdown");
-
-        // If we get here then the connection is closed gracefully
     }
 };
 
