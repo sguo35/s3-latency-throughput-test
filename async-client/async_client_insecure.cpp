@@ -218,7 +218,7 @@ int main(int argc, char** argv)
     for (int i = 0; i < num_connects; i++) {
         // prevent session from being destructed before io_service starts
         // okay to leak memory since this is a short benchmark
-        session* s = new session(ioc, ctx);
+        session* s = new session(ioc);
         s->run(host, port, target, version, auth_header, headers);
     }
 
