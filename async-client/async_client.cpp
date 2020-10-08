@@ -220,7 +220,7 @@ void* runner(void* param) {
 int main(int argc, char** argv)
 {
     // Check command line arguments.
-    if(argc != 4 && argc != 5)
+    if(argc != 5 && argc != 6)
     {
         std::cerr <<
             "Usage: http-client-async-ssl <host> <port> <target> [<HTTP version: 1.0 or 1.1(default)>]\n" <<
@@ -232,7 +232,7 @@ int main(int argc, char** argv)
     auto const host = argv[1];
     auto const port = argv[2];
     auto const target = argv[3];
-    int version = argc == 5 && !std::strcmp("1.0", argv[4]) ? 10 : 11;
+    int version = argc == 6 && !std::strcmp("1.0", argv[4]) ? 10 : 11;
 
     char* access_key_cstr = getenv("AWS_ACCESS_KEY");
     char* secret_key_cstr = getenv("AWS_SECRET_KEY");
@@ -269,10 +269,11 @@ int main(int argc, char** argv)
     
     
     // start timing
+    int num_connects = atoi(argv[5]);
     start = std::chrono::high_resolution_clock::now();
     std::cout.setstate(std::ios_base::badbit);
 
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < num_connects; i++) {
         // prevent session from being destructed before io_service starts
         // okay to leak memory since this is a short benchmark
         session* s = new session(ioc, ctx);
